@@ -12,37 +12,37 @@ exec_env.set_parallelism(1)
 t_config = TableConfig()
 t_env = BatchTableEnvironment.create(exec_env, t_config)
 
-input_path = './input/Sidewalk_201912.GeoJSON'
+input_path = './input/data.json'
 output_path = './output/output.txt'
 if os.path.exists(output_path):
     os.remove(output_path)
 
 wpre.wcpretreatment(input_path)
-input_path = './tmpfile'
+input_path = './input'
 
 t_env.connect(FileSystem().path(input_path)) \
     .with_format(OldCsv()
-                 .field('word', DataTypes.STRING())) \
+                 .field('geoID', DataTypes.STRING())) \
     .with_schema(Schema()
-                 .field('word', DataTypes.STRING())) \
+                 .field('geoID', DataTypes.STRING())) \
     .create_temporary_table('mySource')
 
 t_env.connect(FileSystem().path(output_path)) \
     .with_format(OldCsv()
                  .field_delimiter('\t')
-                 .field('word', DataTypes.STRING())
-                 .field('count', DataTypes.BIGINT())) \
+                 .field('geoID', DataTypes.STRING())
+                 .field('notification_rate_per_100000_population_14-days', DataTypes.BIGINT())) \
     .with_schema(Schema()
-                 .field('word', DataTypes.STRING())
-                 .field('count', DataTypes.BIGINT())) \
+                 .field('geoID', DataTypes.STRING())
+                 .field('notification_rate_per_100000_population_14-days', DataTypes.BIGINT())) \
     .create_temporary_table('mySink')
 
 t_env.from_path('mySource') \
-    .group_by('word') \
-    .select('word, count(1)') \
+    .group_by('geoID') \
+    .select('geoID, count(1)') \
     .insert_into('mySink')
 
 t_env.execute("python_job")
-os.remove('./tmpfile')
+os.remove('./input')
 
 print(time.time() - start_t)
