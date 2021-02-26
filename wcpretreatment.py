@@ -1,7 +1,7 @@
 import json
 
 def wcpretreatment(path):
-    #path = r'./Sidewalk_201912.GeoJSON'
+    path = r'C:\Python38\Lib\site-packages\pyflink\examples\python\table\batch\practice-flink-wordcount\input\data.json'
     with open(path, 'r') as f:
         jd = json.loads(f.read())
     sb = ''

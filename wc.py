@@ -22,27 +22,27 @@ input_path = './input'
 
 t_env.connect(FileSystem().path(input_path)) \
     .with_format(OldCsv()
-                 .field('geoID', DataTypes.STRING())) \
+                 .field('dateRep', DataTypes.DATE(True))) \
     .with_schema(Schema()
-                 .field('geoID', DataTypes.STRING())) \
+                 .field('dateRep', DataTypes.DATE(True))) \
     .create_temporary_table('mySource')
 
 t_env.connect(FileSystem().path(output_path)) \
     .with_format(OldCsv()
                  .field_delimiter('\t')
-                 .field('geoID', DataTypes.STRING())
-                 .field('notification_rate_per_100000_population_14-days', DataTypes.BIGINT())) \
+                 .field('dateRep', DataTypes.DATE(True))
+                 .field('deaths_weekly', DataTypes.BIGINT())) \
     .with_schema(Schema()
-                 .field('geoID', DataTypes.STRING())
-                 .field('notification_rate_per_100000_population_14-days', DataTypes.BIGINT())) \
+                 .field('dateRep', DataTypes.DATE(True))
+                 .field('deaths_weekly', DataTypes.BIGINT())) \
     .create_temporary_table('mySink')
 
 t_env.from_path('mySource') \
-    .group_by('geoID') \
-    .select('geoID, count(1)') \
+    .group_by('dateRep') \
+    .select('dateRep, count(1)') \
     .insert_into('mySink')
 
-t_env.execute("python_job")
+t_env.execute("wc")
 os.remove('./input')
 
 print(time.time() - start_t)
