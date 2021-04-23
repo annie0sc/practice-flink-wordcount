@@ -29,7 +29,7 @@ python --version
 ```
 python -m pip install apache-flink
 ```
-4. If warming is dispalyed, update pip.
+4. If a warning is dispalyed, update pip.
 ```
 python -m pip install --upgrade pip
 ```
